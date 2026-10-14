@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>별의 밝기 강의</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap">
+<style>
+/* 레이아웃: 1920×1080 무대를 화면에 맞춰 축소, 아래쪽에 조작 막대. 단일 우주(어두운) 룩으로 고정. */
+:root{
+  --night:#0E1430; --night2:#1B2450; --deep:#060A1C;
+  --paper:#F5F3EC; --card:#FDFCF8; --line:#E2DFD3;
+  --ink:#0E1430; --body:#3B4560; --muted:#5E6684; --mist:#C9D3EA; --dim:#8C95B4;
+  --gold:#F2B544; --amber:#8F5208; --blue:#2E4FA8; --sky:#9CC3FF; --ember:#F08A5D; --orange:#F2A04B;
+  --blank:#FFF0C9; --blank-edge:#E7C36A;
+  --display:'Black Han Sans','Noto Sans KR','Malgun Gothic',sans-serif;
+  --sans:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--deep);color:var(--mist);font-family:var(--sans);overflow:hidden;margin:0}
+#viewport{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--night)}
+
+/* 슬라이드 공통 */
+.slide{position:absolute;inset:0;padding:112px 128px 150px;display:flex;flex-direction:column;gap:36px;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s;font-family:var(--sans)}
+.slide.active{opacity:1;visibility:visible;transition:opacity .45s ease}
+.slide.dark{background:var(--night);color:var(--mist)}
+.slide.light{background:var(--paper);color:var(--body)}
+.slide.alt{background:#E9ECF5;color:var(--body)}
+.slide .notes{display:none}
+.eyebrow{font-size:24px;font-weight:700;letter-spacing:2px}
+.dark .eyebrow{color:var(--gold)} .light .eyebrow,.alt .eyebrow{color:var(--amber)}
+h1,h2,h3,p{margin:0}
+h2{font-size:68px;font-weight:800;line-height:1.2;text-wrap:balance}
+.dark h2{color:var(--paper)} .light h2,.alt h2{color:var(--ink)}
+h3{font-size:36px;font-weight:800}
+.foot{position:absolute;left:128px;bottom:56px;width:1664px;font-size:24px;display:flex;justify-content:space-between}
+.dark .foot{color:var(--dim)} .light .foot,.alt .foot{color:var(--muted)}
+.row{display:flex;gap:32px}
+.col{display:flex;flex-direction:column;gap:20px}
+.grow{flex:1;min-height:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:36px 40px;display:flex;flex-direction:column;gap:12px}
+.card-dark{background:var(--night2);border-radius:24px;padding:36px 40px;display:flex;flex-direction:column;gap:12px}
+.card-ink{background:var(--night);border-radius:24px;padding:40px 44px;display:flex;flex-direction:column;gap:14px;color:var(--paper)}
+.tag{font-size:24px;font-weight:700}
+.big{font-size:36px;font-weight:700;line-height:1.45}
+.txt{font-size:32px;line-height:1.5}
+
+/* 단계별 등장 */
+.step{opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.step.on{opacity:1;transform:none}
+
+/* 빈칸: 활동지와 같은 연노랑 상자. 답 길이만큼 자리를 잡고, 열리면 글자가 나타남 */
+.blank{display:inline-block;min-width:2.4em;padding:0 .4em;margin:0 .1em;border-radius:8px;background:var(--blank);border-bottom:4px solid var(--blank-edge);color:transparent;text-align:center;line-height:1.3;cursor:pointer;transition:color .3s ease,background .3s ease;position:relative}
+.blank.on{color:#B0490C;background:#FFE3A3;animation:pop .45s ease}
+.dark .blank{background:rgba(242,181,68,.16);border-bottom-color:var(--gold)}
+.dark .blank.on{color:var(--gold);background:rgba(242,181,68,.26)}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+/* 활동지 모양 카드 */
+.sheet{background:#FFFFFF;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.sheet-head{background:var(--night);padding:22px 40px;display:flex;align-items:baseline;gap:20px}
+.sheet-head b{font-family:var(--display);font-weight:400;font-size:40px;color:var(--gold)}
+.sheet-head span{font-size:34px;font-weight:800;color:var(--paper)}
+.sheet-head em{margin-left:auto;font-style:normal;font-size:24px;color:var(--mist)}
+.sheet-body{padding:40px 48px;display:flex;flex-direction:column;gap:30px}
+.sec-title{display:flex;align-items:center;gap:18px;font-size:36px;font-weight:800;color:var(--ink);padding-bottom:14px;border-bottom:2px solid #ECE8DA}
+.sec-title i{font-style:normal;display:inline-grid;place-items:center;width:46px;height:46px;background:var(--gold);color:var(--ink);font-size:28px;border-radius:6px}
+.line{font-size:36px;line-height:1.6;color:var(--body)}
+.line .n{color:var(--blue);font-weight:800;margin-right:10px}
+.line b{color:var(--ink)}
+.arrow-line{background:#F4F1E8;border-left:8px solid var(--gold);padding:18px 28px;font-size:36px;line-height:1.55;color:var(--body)}
+.arrow-line::before{content:"➡";color:var(--amber);margin-right:14px}
+.ws{display:inline-block;font-size:22px;font-weight:700;color:var(--blue);border:2px solid var(--blue);border-radius:999px;padding:2px 14px;vertical-align:middle;letter-spacing:1px}
+.dark .ws{color:var(--sky);border-color:var(--sky)}
+
+/* 표 */
+table.res{color:var(--body);font-family:inherit;width:100%;border-collapse:separate;border-spacing:0;font-size:34px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+table.res th{background:#E3E7F2;color:var(--ink);padding:20px 28px;font-weight:800}
+table.res td{padding:22px 28px;border-top:1px solid var(--line);text-align:center}
+table.res td:first-child,table.res th:first-child{text-align:left}
+
+/* 인터랙티브 컨트롤 */
+.ctrl{display:flex;align-items:center;gap:20px;font-size:26px;font-weight:700}
+.ctrl input[type=range]{width:520px;accent-color:var(--orange);height:28px}
+.btn{font:inherit;font-size:26px;font-weight:700;padding:12px 26px;border-radius:999px;border:2px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.btn:focus-visible,.tb button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn.on{background:var(--sky);color:var(--ink);border-color:var(--sky)}
+.readout{font-family:var(--display);font-size:80px;color:var(--orange);line-height:1}
+canvas{display:block;border-radius:24px}
+
+/* 진행 막대 */
+#progress{position:absolute;left:0;top:0;height:8px;background:var(--gold);transition:width .4s ease;z-index:5}
+
+/* 조작 막대 (무대 밖, 화면 기준) */
+.tb{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;align-items:center;padding:8px;background:rgba(14,20,48,.82);border:1px solid rgba(201,211,234,.18);border-radius:999px;backdrop-filter:blur(8px);transition:opacity .4s;z-index:20;max-width:calc(100vw - 32px);flex-wrap:wrap;justify-content:center}
+.tb.idle{opacity:.18}
+.tb button{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--mist);cursor:pointer;display:grid;place-items:center}
+.tb button:hover{background:rgba(201,211,234,.14)}
+.tb button.on{background:var(--gold);color:var(--ink)}
+.tb svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tb .x{display:none}.tb button.muted .w1,.tb button.muted .w2{display:none}.tb button.muted .x{display:inline}
+.tb .count{min-width:88px;text-align:center;font-size:15px;font-weight:700;color:var(--paper);font-variant-numeric:tabular-nums}
+
+/* 목차 */
+#outline{position:fixed;inset:0;background:rgba(6,10,28,.92);z-index:30;overflow:auto;padding:48px 16px 120px}
+#outline .wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+#outline h4{margin:0 0 10px;color:var(--gold);font-size:15px;letter-spacing:2px}
+#outline ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+#outline button{width:100%;text-align:left;font:inherit;font-size:16px;color:var(--paper);background:var(--night2);border:1px solid transparent;border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;gap:12px}
+#outline button:hover,#outline button.cur{border-color:var(--gold)}
+#outline button span{color:var(--dim);font-variant-numeric:tabular-nums;min-width:22px}
+
+/* 발표자 노트 */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:36vh;overflow:auto;background:rgba(10,14,36,.96);border-top:2px solid var(--gold);z-index:15;padding:18px 16px calc(84px + env(safe-area-inset-bottom,0px))}
+#notes .wrap{max-width:1100px;margin:0 auto;font-size:16px;line-height:1.75;color:var(--mist);white-space:pre-line}
+#notes .wrap b{color:var(--gold);display:block;margin-bottom:6px;font-size:13px;letter-spacing:2px}
+
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.45}}
+.tw{animation:twinkle 3s ease-in-out infinite}
+.tw2{animation:twinkle 4.2s ease-in-out infinite .8s}
+@media (prefers-reduced-motion:reduce){.slide,.step,.blank{transition:none}.blank.on{animation:none}.tw,.tw2{animation:none}}
+</style>
+
+<div id="viewport">
+<div id="stage">
+<div id="progress"></div>
+
+<!-- ───────── 1. 표지 ───────── -->
+<section class="slide dark" data-sec="3차시 · 밝기로 구하는 거리" data-title="표지" style="justify-content:center;gap:28px;padding-bottom:180px">
+  <canvas data-anim="cover" width="1920" height="1080" style="position:absolute;left:0;top:0;border-radius:0"></canvas>
+  <p class="eyebrow" style="position:relative;font-size:30px;letter-spacing:4px">VII. 별과 우주 · 1. 별</p>
+  <h1 style="position:relative;font-family:var(--display);font-weight:400;font-size:150px;line-height:1.12;color:var(--paper)">밝기로 구하는<br>별까지의 거리</h1>
+  <p style="position:relative;font-size:44px;color:var(--mist)">연주 시차로 잴 수 없는 먼 별은 어떻게 할까?</p>
+  <p class="foot" style="z-index:1"><span>중학교 과학 3 · 3차시</span><span>개념 정리 활동지 02 · 교과서 230쪽</span></p>
+</section>
+
+<!-- ───────── 2. 도입: 가로등 ───────── -->
+<section class="slide dark" data-sec="3차시 · 밝기로 구하는 거리" data-title="멀리 있는 가로등은 왜 어두울까?">
+  <p class="eyebrow">3차시 · 별의 밝기</p>
+  <h2>밝기가 같은 가로등인데<br>왜 멀리 있는 것은 어두울까?</h2>
+  <p class="txt"><b style="color:var(--gold)">해 보기</b>&nbsp; 스마트 기기의 조도 측정 앱으로 손전등의 밝기를 재 보자.</p>
+  <div class="row grow">
+    <div class="card-dark grow step" data-step="1"><p style="font-family:var(--display);font-size:44px;color:var(--gold)">①</p><p class="big" style="color:var(--paper);font-size:32px">작은 손전등을 기준선에 놓고 측정</p></div>
+    <div class="card-dark grow step" data-step="2"><p style="font-family:var(--display);font-size:44px;color:var(--gold)">②</p><p class="big" style="color:var(--paper);font-size:32px">작은 손전등을 기준선보다 먼 곳에서 측정</p></div>
+    <div class="card-dark grow step" data-step="3"><p style="font-family:var(--display);font-size:44px;color:var(--gold)">③</p><p class="big" style="color:var(--paper);font-size:32px">큰 손전등을 기준선에 놓고 측정</p></div>
+  </div>
+  <p class="step" data-step="4" style="font-size:32px;font-weight:700;color:var(--paper)">①과 ②, ①과 ③의 밝기를 비교하고 까닭을 설명해 보자.</p>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span></p>
+</section>
+
+<!-- ───────── 3. 거리와 밝기 시뮬레이션 ───────── -->
+<section class="slide light" data-sec="3차시 · 밝기로 구하는 거리" data-title="멀어질수록 빛이 넓게 퍼진다">
+  <p class="eyebrow">3차시 · 보충</p>
+  <h2>멀어질수록 빛이 넓게 퍼진다</h2>
+  <div class="row grow" style="gap:48px;align-items:flex-start">
+    <div class="col interactive" style="flex:none;gap:18px">
+      <canvas data-anim="lamp" width="1000" height="500"></canvas>
+      <label class="ctrl" for="rng-inv" style="color:var(--body)">
+        <span>거리 1배</span>
+        <input id="rng-inv" type="range" min="1" max="3" step="0.01" value="1">
+        <span>3배</span>
+      </label>
+    </div>
+    <div class="col grow" style="gap:20px">
+      <div class="card" style="flex-direction:row;justify-content:space-between;align-items:baseline"><p class="tag" style="color:var(--muted)">거리</p><p class="readout" id="inv-d" style="font-size:64px">1배</p></div>
+      <div class="card" style="flex-direction:row;justify-content:space-between;align-items:baseline"><p class="tag" style="color:var(--muted)">빛을 받는 넓이</p><p class="readout" id="inv-a" style="font-size:64px;color:var(--blue)">1배</p></div>
+      <div class="card" style="flex-direction:row;justify-content:space-between;align-items:baseline"><p class="tag" style="color:var(--muted)">한 칸의 밝기</p><p class="readout" id="inv-b" style="font-size:64px;color:var(--amber)">1</p></div>
+      <div class="card-ink step" data-step="1" style="padding:32px 36px">
+        <p style="font-size:32px;font-weight:700;line-height:1.45">거리가 멀어질수록 어둡게 보인다.<br><span style="color:var(--gold)">가까운 별일수록 밝게 보인다.</span></p>
+      </div>
+    </div>
+  </div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span><span>막대를 끌어 손전등과 벽 사이의 거리를 바꿔 보세요</span></p>
+</section>
+
+<!-- ───────── 4. 등급 ───────── -->
+<section class="slide light" data-sec="3차시 · 밝기로 구하는 거리" data-title="별의 밝기는 등급으로">
+  <p class="eyebrow">3차시 · 별의 등급</p>
+  <h2>별의 밝기는 등급으로 나타낸다</h2>
+  <div style="display:flex;flex-direction:column;gap:12px;background:var(--night);border-radius:24px;padding:32px 40px">
+    <svg aria-label="등급 숫자가 작을수록 밝고 큰 별, 클수록 어둡고 작은 별" width="1584" height="120" viewBox="0 0 1584 120"><g fill="#F5F3EC"><circle cx="99" cy="60" r="48"/><circle cx="297" cy="60" r="38"/><circle cx="495" cy="60" r="30"/><circle cx="693" cy="60" r="23"/><circle cx="891" cy="60" r="17"/><circle cx="1089" cy="60" r="12"/><circle cx="1287" cy="60" r="8"/><circle cx="1485" cy="60" r="5"/></g></svg>
+    <div style="display:grid;grid-template-columns:repeat(8,1fr);font-size:32px;font-weight:700;color:var(--gold);text-align:center"><span>-1</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:24px;color:var(--mist)"><span>← 밝다</span><span>어둡다 →</span></div>
+  </div>
+  <div class="row grow">
+    <div class="card grow step" data-step="1"><h3 style="color:var(--ink)">숫자가 작을수록</h3><p style="font-size:30px;line-height:1.45">밝은 별이다. 0, 음수(-), 소수(2.1등급)도 쓴다.</p></div>
+    <div class="card grow step" data-step="2"><h3 style="color:var(--ink)">1등급 vs 6등급</h3><p style="font-size:30px;line-height:1.45">1등급인 별은 6등급인 별보다 <b>100배</b> 밝다.</p></div>
+    <div class="card grow step" data-step="3"><h3 style="color:var(--ink)">1등급 차이</h3><p style="font-size:30px;line-height:1.45">밝기는 약 <b>2.5배</b> 차이 난다.</p></div>
+  </div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span></p>
+</section>
+
+<!-- ───────── 5. 겉보기 등급과 절대 등급 ───────── -->
+<section class="slide light" data-sec="3차시 · 밝기로 구하는 거리" data-title="겉보기 등급과 절대 등급">
+  <p class="eyebrow">3차시 · 별의 등급</p>
+  <h2>겉보기 등급과 절대 등급</h2>
+  <div class="row">
+    <div class="card grow" style="padding:32px 40px"><h3 style="font-size:40px;color:var(--blue)">겉보기 등급</h3><p style="font-size:30px;line-height:1.45">우리 눈에 보이는 별의 밝기를 등급으로 나타낸 것</p><p style="font-size:26px;color:var(--muted)">거리를 고려하지 않으므로 실제 밝기는 비교할 수 없다.</p></div>
+    <div class="card-ink grow step" data-step="1" style="padding:32px 40px"><h3 style="font-size:40px;color:var(--gold)">절대 등급</h3><p style="font-size:30px;line-height:1.45">모든 별이 <b>10 pc</b> 거리에 있다고 가정했을 때의 밝기 등급</p><p style="font-size:26px;color:var(--mist)">별의 실제 밝기를 비교할 수 있다.</p></div>
+  </div>
+  <div class="col interactive" style="gap:14px">
+    <canvas data-anim="tenpc" width="1664" height="270"></canvas>
+    <div class="ctrl" style="color:var(--ink)"><button class="btn" id="btn-ten" type="button">모두 10 pc로 옮기기</button><span style="font-size:26px;font-weight:500;color:var(--muted)">별을 같은 거리에 두면 실제 밝기를 비교할 수 있어요</span></div>
+  </div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span><span>별의 크기 = 밝게 보이는 정도 · 거리는 모식적 표현</span></p>
+</section>
+
+<!-- ───────── 6. 개념 정리 1 ───────── -->
+<section class="slide light" data-sec="3차시 · 밝기로 구하는 거리" data-title="개념 정리: 별의 등급">
+  <p class="eyebrow">3차시 · 개념 정리</p>
+  <div class="sheet grow">
+    <div class="sheet-head"><b>02</b><span>밝기로 구하는 별까지의 거리</span><em>개념 정리 활동지 · 교과서 230쪽</em></div>
+    <div class="sheet-body" style="gap:24px;padding-block:32px">
+      <p class="sec-title"><i>1</i>별의 등급</p>
+      <p class="line"><span class="n">(1)</span><b>등급:</b> 별의 밝기를 숫자를 이용하여 나타낸 것</p>
+      <p class="line"><span class="n">(2)</span><b>별의 밝기와 등급:</b> 등급의 숫자가 작을수록 <span class="blank" data-step="1">밝은</span> 별이다.</p>
+      <p class="arrow-line">1 등급인 별은 6 등급인 별보다 <b style="color:var(--ink)">100 배</b> 밝다.</p>
+      <p class="line"><span class="n">(3)</span><span class="blank" data-step="2">겉보기 등급</span>: 우리 눈에 보이는 별의 밝기를 등급으로 나타낸 것</p>
+      <p class="line"><span class="n">(4)</span><b>절대 등급:</b> 별이 <span class="blank" data-step="3">10</span> pc 거리에 있다고 가정할 때의 밝기를 등급으로 나타낸 것</p>
+    </div>
+  </div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span><span>빈칸은 클릭 순서대로, 또는 빈칸을 직접 눌러서 열 수 있어요</span></p>
+</section>
+
+<!-- ───────── 7. 두 등급 비교로 거리 알기 ───────── -->
+<section class="slide light" data-sec="3차시 · 밝기로 구하는 거리" data-title="두 등급을 비교하면 거리를 안다">
+  <p class="eyebrow">3차시 · 두 번째 열쇠</p>
+  <h2>두 등급을 비교하면 거리를 안다</h2>
+  <svg aria-label="지구에서 10 pc 기준선보다 가까운 곳에 시리우스, 먼 곳에 베텔게우스가 있는 그림" width="1664" height="170" viewBox="0 0 1664 170" style="flex:none"><rect x="0" y="0" width="1664" height="170" rx="20" fill="#0E1430"/><path d="M140 85 L1600 85" stroke="#4A5688" stroke-width="3"/><path d="M820 18 L820 152" stroke="#F2B544" stroke-width="4" stroke-dasharray="12 10"/><circle cx="110" cy="85" r="26" fill="#3E8E6E"/><circle cx="470" cy="85" r="18" fill="#C9D9FF"/><circle cx="1330" cy="85" r="22" fill="#F08A5D"/><text x="110" y="148" text-anchor="middle" font-size="24" font-weight="700" fill="#F5F3EC" font-family="Noto Sans KR, sans-serif">지구</text><text x="840" y="44" font-size="28" font-weight="800" fill="#F2B544" font-family="Noto Sans KR, sans-serif">10 pc</text><text x="470" y="140" text-anchor="middle" font-size="24" font-weight="700" fill="#F5F3EC" font-family="Noto Sans KR, sans-serif">시리우스</text><text x="1330" y="140" text-anchor="middle" font-size="24" font-weight="700" fill="#F5F3EC" font-family="Noto Sans KR, sans-serif">베텔게우스</text></svg>
+  <div class="row grow" style="gap:24px">
+    <div class="card grow step" data-step="1" style="padding:30px 36px"><h3 style="color:var(--blue)">겉보기 &lt; 절대</h3><p style="font-size:32px;font-weight:700;color:var(--ink)">10 pc보다 가깝다</p><p style="font-size:26px;line-height:1.45;color:var(--muted)">예) 시리우스<br>겉보기 -1.5 · 절대 1.4</p></div>
+    <div class="card grow step" data-step="2" style="padding:30px 36px"><h3 style="color:var(--amber)">겉보기 = 절대</h3><p style="font-size:32px;font-weight:700;color:var(--ink)">딱 10 pc</p><p style="font-size:26px;line-height:1.45;color:var(--muted)">두 등급이 같으면<br>거리는 10 pc</p></div>
+    <div class="card grow step" data-step="3" style="padding:30px 36px"><h3 style="color:#B04A22">겉보기 &gt; 절대</h3><p style="font-size:32px;font-weight:700;color:var(--ink)">10 pc보다 멀다</p><p style="font-size:26px;line-height:1.45;color:var(--muted)">예) 베텔게우스<br>겉보기 0.4 · 절대 -5.6</p></div>
+  </div>
+  <div class="card-ink step" data-step="4" style="padding:26px 40px"><p style="font-size:34px;font-weight:700">(겉보기 등급 − 절대 등급) 값이 클수록 <span style="color:var(--gold)">멀리 있는 별</span>이다.</p></div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span></p>
+</section>
+
+<!-- ───────── 8. 개념 정리 2 ───────── -->
+<section class="slide light" data-sec="3차시 · 밝기로 구하는 거리" data-title="개념 정리: 별의 등급과 거리">
+  <p class="eyebrow">3차시 · 개념 정리</p>
+  <div class="sheet grow">
+    <div class="sheet-head"><b>02</b><span>밝기로 구하는 별까지의 거리</span><em>개념 정리 활동지 · 교과서 230쪽</em></div>
+    <div class="sheet-body" style="gap:20px;padding-block:28px">
+      <p class="sec-title"><i>2</i>별의 등급과 거리</p>
+      <p class="line"><span class="n">(1)</span>별은 대개 겉보기 등급과 절대 등급이 서로 <span class="blank" data-step="1">다르게</span> 나타난다.</p>
+      <p class="line"><span class="n">(2)</span><b>별의 등급과 거리의 관계:</b><br>(겉보기 등급 − 절대 등급) 값이 작을수록 <span class="blank" data-step="2">가까이</span> 있는 별이고, 클수록 <span class="blank" data-step="3">멀리</span> 있는 별이다.</p>
+      <table class="res" style="font-size:32px">
+        <tr><th style="width:36%;text-align:center;background:var(--night);color:var(--paper)">구분</th><th style="text-align:center;background:var(--night);color:var(--paper)">겉보기 등급과 절대 등급의 대소 관계</th></tr>
+        <tr><td style="text-align:center;padding:14px">10 pc보다 가까운 별</td><td style="padding:14px">겉보기 등급 <span class="blank" data-step="4">&lt;</span> 절대 등급</td></tr>
+        <tr><td style="text-align:center;padding:14px">10 pc에 있는 별</td><td style="padding:14px">겉보기 등급 &nbsp;=&nbsp; 절대 등급</td></tr>
+        <tr><td style="text-align:center;padding:14px">10 pc보다 먼 별</td><td style="padding:14px">겉보기 등급 <span class="blank" data-step="5">&gt;</span> 절대 등급</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span><span>빈칸을 직접 눌러도 열려요</span></p>
+</section>
+
+<!-- ───────── 9. 확인 문제 ───────── -->
+<section class="slide alt" data-sec="3차시 · 밝기로 구하는 거리" data-title="두 번째 열쇠 확인하기">
+  <p class="eyebrow">3차시 · 확인 문제</p>
+  <h2>두 번째 열쇠 확인하기</h2>
+  <div class="row grow">
+    <div class="col grow" style="gap:24px">
+      <div class="card" style="flex-direction:row;gap:24px;border:0;padding:30px 34px"><p style="font-family:var(--display);font-size:44px;color:var(--blue)">1</p><p style="flex:1;font-size:30px;line-height:1.7">눈에 보이는 별의 밝기 등급은 <span class="blank" data-step="1">겉보기 등급</span>, 10 pc 거리에 있다고 가정한 밝기 등급은 <span class="blank" data-step="2">절대 등급</span>이다.</p></div>
+      <div class="card" style="flex-direction:row;gap:24px;border:0;padding:30px 34px"><p style="font-family:var(--display);font-size:44px;color:var(--blue)">2</p><div class="col" style="flex:1;gap:8px"><p style="font-size:30px;line-height:1.5">겉보기 등급과 절대 등급이 같은 별까지의 거리는?</p><p class="step" data-step="3" style="font-size:30px;font-weight:700;color:#B0490C">→ 10 pc</p></div></div>
+    </div>
+    <div class="card grow" style="border:0;padding:30px 34px;gap:20px">
+      <div class="row" style="gap:24px"><p style="font-family:var(--display);font-size:44px;color:var(--blue)">3</p><p style="flex:1;font-size:30px;line-height:1.5">두 별 중 지구에서 더 멀리 있는 별은? 까닭도 설명해 보자.</p></div>
+      <table class="res" style="font-size:30px"><tr><th style="text-align:center">별</th><th style="text-align:center">겉보기 등급</th><th style="text-align:center">절대 등급</th></tr><tr><td style="text-align:center">(가)</td><td>1</td><td>5</td></tr><tr><td style="text-align:center">(나)</td><td>3</td><td>-1</td></tr></table>
+      <p class="step" data-step="4" style="font-size:28px;line-height:1.5;font-weight:700;color:#B0490C">→ (나). (나)는 겉보기 3 &gt; 절대 -1이라 10 pc보다 멀고, (가)는 겉보기 1 &lt; 절대 5라 10 pc보다 가깝다.</p>
+    </div>
+  </div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span></p>
+</section>
+
+<!-- ───────── 10. 두 번째 열쇠 ───────── -->
+<section class="slide dark" data-sec="3차시 · 밝기로 구하는 거리" data-title="두 번째 열쇠 획득" data-sfx="chime" style="background:radial-gradient(circle at 78% 30%,#2A3778 0%,#0E1430 62%);justify-content:center;gap:40px">
+  <p class="eyebrow" style="font-size:30px;letter-spacing:4px">두 번째 열쇠 획득</p>
+  <div class="row" style="align-items:center;gap:48px">
+    <svg aria-hidden="true" width="200" height="200" viewBox="0 0 200 200" style="flex:none" class="tw"><circle cx="60" cy="100" r="46" fill="none" stroke="#F2B544" stroke-width="16"/><path d="M104 100 H186 M150 100 V132 M176 100 V124" stroke="#F2B544" stroke-width="16" stroke-linecap="round"/></svg>
+    <p style="font-family:var(--display);font-size:84px;line-height:1.25;color:var(--paper)">별까지의 거리는 <span class="blank" data-step="1" style="font-family:var(--display)">겉보기 등급</span>과<br><span class="blank" data-step="2" style="font-family:var(--display)">절대 등급</span>을 비교하면 알 수 있다</p>
+  </div>
+  <div class="card-dark step" data-step="3" style="max-width:1200px;border:2px solid var(--sky)">
+    <p class="tag" style="color:var(--sky)">다음 시간 · 4차시</p>
+    <p class="big" style="color:var(--paper)">베텔게우스는 붉고, 리겔은 푸르다. 별의 색은 무엇을 알려 줄까?</p>
+    <p style="font-size:28px">→ 색으로 비교하는 별의 표면 온도</p>
+  </div>
+  <p class="foot"><span>VII. 별과 우주 · 1. 별</span><span>3차시 끝</span></p>
+</section>
+
+</div>
+</div>
+
+<!-- 조작 막대 -->
+<nav class="tb" id="tb" aria-label="슬라이드 조작">
+  <button type="button" id="b-first" title="처음으로 (Home)" aria-label="처음으로"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/></svg></button>
+  <button type="button" id="b-outline" title="목차 (O)" aria-label="목차"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg></button>
+  <button type="button" id="b-prev" title="이전 (←)" aria-label="이전"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <span class="count" id="count">1 / 16</span>
+  <button type="button" id="b-next" title="다음 (→, 스페이스)" aria-label="다음"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  <button type="button" id="b-reveal" title="이 장 빈칸·단계 모두 보기 (A)" aria-label="모두 보기"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  <button type="button" id="b-sound" title="소리 켜기/끄기 (S)" aria-label="효과음"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w1" d="M16.5 8.5a5 5 0 0 1 0 7"/><path class="w2" d="M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M17 9l5 6M22 9l-5 6"/></svg></button>
+  <button type="button" id="b-full" title="전체화면 (F)" aria-label="전체화면"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</nav>
+
+<div id="outline" hidden><div class="wrap" id="outline-list"></div></div>
+<div id="notes" hidden><div class="wrap" id="notes-text"></div></div>
+
+<script>
+(function(){
+const stage=document.getElementById('stage');
+const slides=[...document.querySelectorAll('.slide')];
+const N=slides.length;
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let cur=0, step=0;
+
+/* 무대 크기 맞추기 */
+function fit(){
+  const s=Math.min(innerWidth/1920, innerHeight/1080);
+  stage.style.transform='translate('+(-960*s)+'px,'+(-540*s)+'px) scale('+s+')';
+}
+addEventListener('resize',fit); fit();
+
+
+/* 효과음: 파일 없이 Web Audio로 직접 만든다. 첫 클릭/키 입력 뒤부터 소리가 난다. */
+let actx=null, soundOn=true, started=false;
+try{ soundOn=localStorage.getItem('star-lecture-sound')!=='off'; }catch(e){}
+function ac(){ if(!actx){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; actx=new C(); } if(actx.state==='suspended') actx.resume(); return actx; }
+function tone(f,dur,type,vol,when,slideTo){ const a=ac(); if(!a) return; const t=a.currentTime+(when||0); const o=a.createOscillator(), g=a.createGain(); o.type=type; o.frequency.setValueAtTime(f,t); if(slideTo) o.frequency.exponentialRampToValueAtTime(slideTo,t+dur); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+dur+0.03); }
+function swish(){ const a=ac(); if(!a) return; const t=a.currentTime, len=0.32, buf=a.createBuffer(1,Math.floor(a.sampleRate*len),a.sampleRate), d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=a.createBufferSource(); s.buffer=buf; const f=a.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(500,t); f.frequency.exponentialRampToValueAtTime(2600,t+len); const g=a.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.08,t+0.08); g.gain.exponentialRampToValueAtTime(0.0001,t+len); s.connect(f); f.connect(g); g.connect(a.destination); s.start(t); s.stop(t+len); }
+function sfx(k){ if(!soundOn) return; try{
+  if(k==='ding'){ tone(988,0.45,'sine',0.16); tone(1480,0.5,'sine',0.07,0.05); }
+  else if(k==='pop'){ tone(420,0.13,'triangle',0.11,0,700); }
+  else if(k==='swish'){ swish(); }
+  else if(k==='chime'){ [784,988,1175,1568].forEach((f,i)=>tone(f,0.7,'sine',0.11,i*0.1)); tone(2093,0.9,'sine',0.05,0.42); }
+}catch(e){} }
+function blankSfx(){ return slides[cur].dataset.sfx==='chime'?'chime':'ding'; }
+function stepSfx(){ const els=[...slides[cur].querySelectorAll('[data-step="'+step+'"]')]; sfx(els.some(e=>e.classList.contains('blank'))?blankSfx():'pop'); }
+function toggleSound(){ soundOn=!soundOn; try{ localStorage.setItem('star-lecture-sound',soundOn?'on':'off'); }catch(e){} syncSound(); if(soundOn) sfx('pop'); }
+function syncSound(){ const b=document.getElementById('b-sound'); if(b){ b.classList.toggle('muted',!soundOn); b.setAttribute('aria-pressed',String(soundOn)); } }
+
+function maxStep(s){let m=0;s.querySelectorAll('[data-step]').forEach(e=>{m=Math.max(m,+e.dataset.step)});return m;}
+function apply(){slides[cur].querySelectorAll('[data-step]').forEach(e=>e.classList.toggle('on',+e.dataset.step<=step));}
+function chrome(){
+  document.getElementById('count').textContent=(cur+1)+' / '+N;
+  document.getElementById('progress').style.width=((cur+1)/N*100)+'%';
+  const nt=slides[cur].querySelector('.notes');
+  document.getElementById('notes-text').innerHTML='<b>'+(cur+1)+'. '+slides[cur].dataset.title+' · 발표자 노트</b>';
+  document.getElementById('notes-text').appendChild(document.createTextNode(nt?nt.textContent.trim():'노트 없음'));
+  document.querySelectorAll('#outline button').forEach((b,i)=>b.classList.toggle('cur',i===cur));
+}
+function go(i,st){
+  i=Math.max(0,Math.min(N-1,i));
+  const changed=i!==cur;
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  cur=i; step=(st==='end')?maxStep(slides[i]):(st||0);
+  apply(); chrome(); startAnims(); if(started&&changed) sfx('swish');
+  try{history.replaceState(null,'','#'+(i+1));}catch(e){}
+}
+function next(){ if(step<maxStep(slides[cur])){step++;apply();stepSfx();} else if(cur<N-1) go(cur+1,0); }
+function prev(){ if(step>0){step--;apply();} else if(cur>0) go(cur-1,'end'); }
+function revealAll(){ step=maxStep(slides[cur]); apply(); slides[cur].querySelectorAll('.blank').forEach(b=>b.classList.add('on')); sfx(blankSfx()); }
+
+/* 클릭으로 넘기기 (조작 요소 제외) */
+stage.addEventListener('click',e=>{
+  const b=e.target.closest('.blank');
+  if(b){b.classList.toggle('on');sfx(b.classList.contains('on')?blankSfx():'pop');return;}
+  if(e.target.closest('button,input,label,a,.interactive')) return;
+  next();
+});
+addEventListener('keydown',e=>{
+  if(e.target.matches&&e.target.matches('input')&&/Arrow/.test(e.key)) return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){ if(e.target.closest&&e.target.closest('button')&&(k===' '||k==='Enter')) return; e.preventDefault(); next(); }
+  else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){ e.preventDefault(); prev(); }
+  else if(k==='Home') go(0,0);
+  else if(k==='End') go(N-1,0);
+  else if(k==='a'||k==='A') revealAll();
+  
+  else if(k==='o'||k==='O') toggleOutline();
+  else if(k==='f'||k==='F') toggleFull();
+  else if(k==='s'||k==='S') toggleSound();
+  else if(k==='Escape'){ document.getElementById('outline').hidden=true; }
+});
+
+/* 조작 막대 */
+const $=id=>document.getElementById(id);
+document.querySelectorAll('.tb button').forEach(b=>b.addEventListener('click',()=>b.blur()));
+$('b-first').onclick=()=>go(0,0);
+$('b-prev').onclick=prev; $('b-next').onclick=next;
+$('b-reveal').onclick=revealAll;
+$('b-sound').onclick=toggleSound; syncSound(); $('b-outline').onclick=toggleOutline; $('b-full').onclick=toggleFull;
+function toggleNotes(){const n=$('notes');n.hidden=!n.hidden;$('b-notes').classList.toggle('on',!n.hidden);}
+function toggleOutline(){const o=$('outline');o.hidden=!o.hidden;}
+function toggleFull(){
+  try{
+    if(document.fullscreenElement) document.exitFullscreen();
+    else{const p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); if(p&&p.catch)p.catch(()=>{});}
+  }catch(e){}
+}
+let idleT; function wake(){ $('tb').classList.remove('idle'); clearTimeout(idleT); idleT=setTimeout(()=>$('tb').classList.add('idle'),2500); }
+addEventListener('mousemove',wake); addEventListener('touchstart',wake,{passive:true}); wake();
+
+/* 목차 만들기 */
+(function(){
+  const box=$('outline-list'); let sec=null, ol=null;
+  slides.forEach((s,i)=>{
+    if(s.dataset.sec!==sec){ sec=s.dataset.sec; const d=document.createElement('div'); d.innerHTML='<h4></h4>'; d.firstChild.textContent=sec; ol=document.createElement('ol'); d.appendChild(ol); box.appendChild(d); }
+    const li=document.createElement('li'), b=document.createElement('button'); b.type='button';
+    b.innerHTML='<span>'+(i+1)+'</span>'; b.appendChild(document.createTextNode(s.dataset.title));
+    b.onclick=()=>{ go(i,0); $('outline').hidden=true; };
+    li.appendChild(b); ol.appendChild(li);
+  });
+  $('outline').addEventListener('click',e=>{ if(e.target.id==='outline') e.target.hidden=true; });
+})();
+
+/* ───────── 애니메이션 ───────── */
+const FONT='"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif';
+function rng(seed){return ()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};}
+
+/* 표지 별밭 */
+const coverStars=(()=>{const r=rng(11),a=[];for(let i=0;i<260;i++)a.push({x:r()*1920,y:r()*1080,s:r()*1.8+0.4,p:r()*6.28,v:0.6+r()*1.6});return a;})();
+function drawCover(g,c,t){
+  const gr=g.createRadialGradient(1480,300,40,1480,300,1100);gr.addColorStop(0,'#2A3778');gr.addColorStop(0.6,'#0E1430');gr.addColorStop(1,'#080C22');
+  g.fillStyle=gr;g.fillRect(0,0,1920,1080);
+  for(const s of coverStars){g.globalAlpha=0.35+0.65*(0.5+0.5*Math.sin(t*s.v+s.p));g.fillStyle='#F5F3EC';g.beginPath();g.arc(s.x,s.y,s.s,0,7);g.fill();}
+  g.globalAlpha=1;
+  // 가까운 별(주황)이 배경 별 사이에서 천천히 좌우로 움직임 = 연주 시차 암시
+  const dx=Math.sin(t*0.5)*36;
+  glow(g,1500+dx,330,12,'#F08A5D'); glow(g,1700,640,10,'#9CC3FF');
+  g.strokeStyle='rgba(240,138,93,.35)';g.setLineDash([6,8]);g.lineWidth=2;g.beginPath();g.moveTo(1464,330);g.lineTo(1536,330);g.stroke();g.setLineDash([]);
+}
+function glow(g,x,y,r,col){const gl=g.createRadialGradient(x,y,0,x,y,r*3.2);gl.addColorStop(0,col);gl.addColorStop(0.35,col+'66');gl.addColorStop(1,col+'00');g.fillStyle=gl;g.beginPath();g.arc(x,y,r*3.2,0,7);g.fill();g.fillStyle=col;g.beginPath();g.arc(x,y,r,0,7);g.fill();}
+
+/* 거리와 밝기: 손전등 빛이 퍼지는 넓이 */
+const rngInv=document.getElementById('rng-inv');
+function frac(d){const b=1/(d*d);for(const [v,s] of [[1,'1'],[0.25,'1/4'],[1/9,'1/9']]) if(Math.abs(b-v)<0.004) return s; return b.toFixed(2);}
+function drawLamp(g,c,t){
+  const W=1000,H=500,LX=90,LY=250,U=190,C=50;
+  const d=+rngInv.value;
+  g.fillStyle='#0E1430';g.fillRect(0,0,W,H);
+  g.font='600 22px '+FONT;g.textAlign='center';
+  for(let k=1;k<=3;k++){const x=LX+U*k;g.strokeStyle='rgba(201,211,234,.25)';g.setLineDash([6,8]);g.lineWidth=2;g.beginPath();g.moveTo(x,LY-C*k);g.lineTo(x,LY+C*k);g.stroke();g.setLineDash([]);g.fillStyle='#8C95B4';g.fillText(k+'배',x,H-22);}
+  const x=LX+U*d,h=C*d,al=0.6/(d*d);
+  const gr=g.createLinearGradient(LX,0,x,0);gr.addColorStop(0,'rgba(242,181,68,.6)');gr.addColorStop(1,'rgba(242,181,68,'+al.toFixed(3)+')');
+  g.fillStyle=gr;g.beginPath();g.moveTo(LX,LY);g.lineTo(x,LY-h);g.lineTo(x,LY+h);g.closePath();g.fill();
+  g.strokeStyle='#F2B544';g.lineWidth=5;g.beginPath();g.moveTo(x,LY-h);g.lineTo(x,LY+h);g.stroke();
+  glow(g,LX,LY,16,'#F2B544');
+  g.fillStyle='#F5F3EC';g.font='700 24px '+FONT;g.fillText('손전등(별)',LX,LY+70);
+  // 오른쪽: 빛을 받는 면을 정면에서 본 모습
+  const PX=820,PY=250,cell=52,side=cell*d;
+  g.fillStyle='#1B2450';g.beginPath();if(g.roundRect)g.roundRect(PX-92,PY-130,184,260,16);else g.rect(PX-92,PY-130,184,260);g.fill();
+  g.fillStyle='rgba(242,181,68,'+Math.min(1,1/(d*d)).toFixed(3)+')';g.fillRect(PX-side/2,PY-side/2-10,side,side);
+  g.strokeStyle='rgba(14,20,48,.7)';g.lineWidth=2;
+  for(let k=-2;k<=2;k++){const o=k*cell-cell/2;}
+  const n=Math.ceil(d);
+  for(let i=0;i<=n;i++){const p=-side/2+Math.min(side,i*cell);g.beginPath();g.moveTo(PX+p,PY-side/2-10);g.lineTo(PX+p,PY+side/2-10);g.stroke();g.beginPath();g.moveTo(PX-side/2,PY+p-10);g.lineTo(PX+side/2,PY+p-10);g.stroke();}
+  g.fillStyle='#C9D3EA';g.font='700 22px '+FONT;g.fillText('빛을 받는 면',PX,PY+112);
+  document.getElementById('inv-d').textContent=(Math.abs(d-Math.round(d))<0.02?Math.round(d):d.toFixed(1))+'배';
+  document.getElementById('inv-a').textContent=(d*d<9.9&&Math.abs(d-Math.round(d))<0.02?Math.round(d)*Math.round(d):(d*d).toFixed(1))+'배';
+  document.getElementById('inv-b').textContent=frac(Math.abs(d-Math.round(d))<0.02?Math.round(d):d);
+}
+rngInv.addEventListener('input',()=>{ if(reduce) startAnims(); });
+
+/* 10 pc로 옮기기 */
+let tenOn=false,tenP=0;
+const TEN=[{n:'태양',app:-26.8,abs:4.8,x:200,col:'#F7D774'},{n:'시리우스',app:-1.5,abs:1.4,x:560,col:'#E9F0FF'},{n:'베텔게우스',app:0.4,abs:-5.6,x:1480,col:'#F08A5D'}];
+function drawTen(g,c,t,dt){
+  const W=1664,H=270,TX=900,EX=70;
+  tenP+=((tenOn?1:0)-tenP)*Math.min(1,dt*2.5); if(reduce) tenP=tenOn?1:0;
+  g.fillStyle='#0E1430';g.fillRect(0,0,W,H);
+  g.strokeStyle='#F2B544';g.lineWidth=3;g.setLineDash([12,10]);g.beginPath();g.moveTo(TX,14);g.lineTo(TX,H-14);g.stroke();g.setLineDash([]);
+  g.font='800 26px '+FONT;g.fillStyle='#F2B544';g.textAlign='left';g.fillText('10 pc',TX+14,36);
+  glow(g,EX,H/2,16,'#5DB37E');g.font='700 22px '+FONT;g.fillStyle='#F5F3EC';g.textAlign='center';g.fillText('지구',EX,H/2+48);
+  TEN.forEach((s,i)=>{
+    const y=50+i*85, x=s.x+(TX-s.x)*tenP, m=s.app+(s.abs-s.app)*tenP;
+    g.strokeStyle='#26305C';g.lineWidth=2;g.beginPath();g.moveTo(130,y);g.lineTo(W-20,y);g.stroke();
+    const r=Math.max(3,Math.min(36,20-2*m));
+    glow(g,x,y,r*0.75,s.col);
+    g.textAlign='left';g.font='800 24px '+FONT;g.fillStyle='#F5F3EC';g.fillText(s.n,x+r*1.6+10,y-4);
+    g.font='600 22px '+FONT;g.fillStyle='#C9D3EA';g.fillText((tenP>0.98?'절대 등급 ':tenP<0.02?'겉보기 등급 ':'')+m.toFixed(1),x+r*1.6+10,y+24);
+  });
+}
+document.getElementById('btn-ten').onclick=e=>{tenOn=!tenOn;e.currentTarget.textContent=tenOn?'원래 거리로':'모두 10 pc로 옮기기';e.currentTarget.classList.toggle('on',tenOn);sfx('pop');if(reduce)startAnims();};
+
+const anims={cover:drawCover,lamp:drawLamp,tenpc:drawTen};
+
+let raf=null,lastFrame=null; const t0=performance.now();
+function frame(ts){
+  const dt=lastFrame===null?0:Math.min(0.05,(ts-lastFrame)/1000); lastFrame=ts;
+  slides[cur].querySelectorAll('canvas[data-anim]').forEach(c=>{const f=anims[c.dataset.anim]; if(f) f(c.getContext('2d'),c,(ts-t0)/1000,dt);});
+  raf=reduce?null:requestAnimationFrame(frame);
+}
+function startAnims(){ if(raf) cancelAnimationFrame(raf); lastFrame=null; raf=requestAnimationFrame(frame); }
+
+const h=parseInt((location.hash||'').replace('#',''),10);
+go(isNaN(h)?0:h-1,0);
+started=true;
+addEventListener('hashchange',()=>{ const k=parseInt((location.hash||'').slice(1),10); if(!isNaN(k)&&k-1!==cur) go(k-1,0); });
+})();
+</script>

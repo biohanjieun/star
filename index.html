@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>별 단원 허브</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* 레이아웃: 밤하늘 머리띠 + 열쇠 세 개를 따라 내려가는 차시 카드. 강의 자료와 같은 우주 룩으로 고정. */
+:root{
+  --night:#0E1430; --night2:#1B2450; --deep:#080C22; --paper:#F5F3EC; --mist:#C9D3EA; --dim:#8C95B4;
+  --gold:#F2B544; --sky:#9CC3FF; --ember:#F08A5D; --blank:#FFF0C9;
+  --display:'Black Han Sans','Noto Sans KR','Malgun Gothic',sans-serif;
+  --sans:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  color-scheme:dark;
+}
+body{margin:0;background:var(--deep);color:var(--mist);font-family:var(--sans);font-size:16px;line-height:1.65}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:20px}
+header{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,#2A3778 0%,var(--night) 60%,var(--deep) 100%);padding-block:64px 56px}
+header canvas{position:absolute;inset:0;width:100%;height:100%}
+header .wrap{position:relative}
+.eyebrow{font-size:14px;font-weight:700;letter-spacing:3px;color:var(--gold);margin:0}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(44px,8vw,80px);line-height:1.1;color:var(--paper);margin:14px 0 18px;text-wrap:balance}
+.lead{font-size:18px;max-width:38em;margin:0}
+.q{display:inline-block;margin-top:26px;border:2px solid var(--gold);border-radius:16px;padding:14px 20px;color:var(--paper);font-weight:700;font-size:18px;background:rgba(27,36,80,.7)}
+main{padding-block:44px 72px;display:flex;flex-direction:column;gap:20px}
+h2{font-size:15px;letter-spacing:2px;color:var(--gold);margin:16px 0 4px}
+.lesson{display:grid;grid-template-columns:96px 1fr auto;gap:24px;align-items:center;background:var(--night);border:1px solid #232D5C;border-radius:20px;padding:24px 28px;color:inherit;text-decoration:none;transition:border-color .2s,transform .2s}
+.lesson:hover,.lesson:focus-visible{border-color:var(--gold);transform:translateY(-2px);outline:none}
+.num{font-family:var(--display);font-size:52px;color:var(--gold);line-height:1}
+.num small{display:block;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--dim);letter-spacing:1px;margin-top:6px}
+.lesson h3{margin:0 0 6px;font-size:22px;color:var(--paper);font-weight:800}
+.lesson p{margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tags span{font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--night2);color:var(--sky)}
+.tags span.ws{background:var(--blank);color:#8F5208}
+.go{font-weight:800;color:var(--gold);white-space:nowrap}
+.key{display:flex;gap:14px;align-items:flex-start;margin-top:12px;font-size:15px;color:var(--paper)}
+.key svg{flex:none;margin-top:3px}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:8px}
+.how div{background:var(--night);border-radius:16px;padding:18px 20px}
+.how b{display:block;color:var(--paper);margin-bottom:4px}
+kbd{font-family:var(--sans);font-size:13px;background:var(--night2);border:1px solid #33407A;border-radius:6px;padding:1px 7px;color:var(--paper)}
+footer{color:var(--dim);font-size:14px;padding-block:0 48px}
+@media (max-width:640px){.lesson{grid-template-columns:1fr;gap:12px}.go{justify-self:start}}
+@media (prefers-reduced-motion:reduce){.lesson{transition:none}}
+</style>
+
+<header>
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="eyebrow">중학교 과학 3 · VII. 별과 우주</p>
+    <h1>1. 별</h1>
+    <p class="lead">별까지의 거리를 재는 두 가지 방법과, 별의 색으로 표면 온도를 비교하는 방법을 다섯 차시에 걸쳐 배웁니다. 차시마다 열쇠를 하나씩 모으면 단원 질문의 답이 열립니다.</p>
+    <p class="q">별까지의 거리와 별의 표면 온도는 어떻게 알 수 있을까?</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <h2>강의 자료</h2>
+
+  <a class="lesson" href="01-parallax.html">
+    <div class="num">01<small>1~2차시</small></div>
+    <div>
+      <h3>연주 시차로 구하는 별까지의 거리</h3>
+      <p>달은 왜 나를 따라올까? 구멍 두 개로 시차를 재 보고, 공전하는 지구에서 별을 보면 무엇이 달라지는지 확인합니다.</p>
+      <div class="tags"><span>시차</span><span>연주 시차</span><span>파섹(pc)</span><span>시차 시뮬레이션</span><span class="ws">활동지 01 · 빈칸 9개</span></div>
+      <p class="key"><svg width="22" height="22" viewBox="0 0 200 200" aria-hidden="true"><circle cx="60" cy="100" r="46" fill="none" stroke="#F2B544" stroke-width="18"/><path d="M104 100 H186 M150 100 V132 M176 100 V124" stroke="#F2B544" stroke-width="18" stroke-linecap="round"/></svg>연주 시차가 작은 별일수록 별까지의 거리는 멀다.</p>
+    </div>
+    <span class="go">수업 열기 →</span>
+  </a>
+
+  <a class="lesson" href="02-brightness.html">
+    <div class="num">02<small>3차시</small></div>
+    <div>
+      <h3>밝기로 구하는 별까지의 거리</h3>
+      <p>멀리 있는 가로등은 왜 어두울까? 빛이 퍼지는 넓이를 보고, 별들을 모두 10 pc로 옮겨 실제 밝기를 비교합니다.</p>
+      <div class="tags"><span>등급</span><span>겉보기 등급</span><span>절대 등급</span><span>10 pc로 옮기기</span><span class="ws">활동지 02 · 빈칸 8개</span></div>
+      <p class="key"><svg width="22" height="22" viewBox="0 0 200 200" aria-hidden="true"><circle cx="60" cy="100" r="46" fill="none" stroke="#F2B544" stroke-width="18"/><path d="M104 100 H186 M150 100 V132 M176 100 V124" stroke="#F2B544" stroke-width="18" stroke-linecap="round"/></svg>별까지의 거리는 겉보기 등급과 절대 등급을 비교하면 알 수 있다.</p>
+    </div>
+    <span class="go">수업 열기 →</span>
+  </a>
+
+  <a class="lesson" href="03-color.html">
+    <div class="num">03<small>4~5차시</small></div>
+    <div>
+      <h3>색으로 비교하는 별의 표면 온도 · 열쇠 모으기</h3>
+      <p>니크롬선을 가열하면 색이 어떻게 변할까? 별의 표면 온도를 바꿔 색을 보고, 5차시에 세 개의 열쇠를 모아 단원을 마무리합니다.</p>
+      <div class="tags"><span>별의 색</span><span>표면 온도</span><span>별 색 시뮬레이션</span><span>꾸미기 책</span><span>중단원 마무리</span><span class="ws">활동지 03 · 빈칸 5개</span></div>
+      <p class="key"><svg width="22" height="22" viewBox="0 0 200 200" aria-hidden="true"><circle cx="60" cy="100" r="46" fill="none" stroke="#F2B544" stroke-width="18"/><path d="M104 100 H186 M150 100 V132 M176 100 V124" stroke="#F2B544" stroke-width="18" stroke-linecap="round"/></svg>별의 표면 온도는 별의 색으로 알 수 있다.</p>
+    </div>
+    <span class="go">수업 열기 →</span>
+  </a>
+
+  <h2>수업할 때</h2>
+  <div class="how">
+    <div><b>넘기기</b>화면 클릭 또는 <kbd>→</kbd> <kbd>스페이스</kbd>. 연노랑 빈칸은 활동지와 같은 자리이고, 눌러서 바로 열 수도 있어요.</div>
+    <div><b>목차</b><kbd>O</kbd> 키를 누르면 원하는 장면으로 바로 이동해요.</div>
+    <div><b>효과음</b>빈칸이 열릴 때 ‘띵’, 열쇠를 얻을 때 멜로디. <kbd>S</kbd> 키로 켜고 꺼요.</div>
+    <div><b>전체화면</b><kbd>F</kbd> 키. 이 장의 빈칸을 한 번에 열려면 <kbd>A</kbd>.</div>
+  </div>
+
+  <h2>이 단원을 배우기 전에</h2>
+  <p style="margin:0">초등 5~6학년 ‘태양계와 별’에서 별과 별자리를 배웠어요. 오리온자리의 베텔게우스(붉은 별)와 리겔(청백색 별)이 단원 처음과 4차시에 다시 나와요.</p>
+</main>
+
+<footer class="wrap">VII. 별과 우주 · 1. 별 · 다음 중단원: 2. 은하와 우주</footer>
+
+<script>
+(function(){
+  const c=document.getElementById('sky'),g=c.getContext('2d');
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let seed=11;const r=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  const stars=[];for(let i=0;i<180;i++)stars.push([r(),r(),r()*1.5+0.4,r()*6.28,0.6+r()*1.4]);
+  function size(){c.width=c.clientWidth*devicePixelRatio;c.height=c.clientHeight*devicePixelRatio;}
+  function draw(t){
+    g.clearRect(0,0,c.width,c.height);const d=devicePixelRatio;
+    for(const s of stars){g.globalAlpha=0.3+0.6*(0.5+0.5*Math.sin(t/1000*s[4]+s[3]));g.fillStyle='#F5F3EC';g.beginPath();g.arc(s[0]*c.width,s[1]*c.height,s[2]*d,0,7);g.fill();}
+    g.globalAlpha=1;
+    if(!reduce) requestAnimationFrame(draw);
+  }
+  addEventListener('resize',size);size();requestAnimationFrame(draw);
+})();
+</script>
